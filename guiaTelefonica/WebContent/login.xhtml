@@ -1,0 +1,16 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="./WEB-INF/templates/plantillaPrincipal.xhtml"
+                xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Login Admin Sedes</title>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+                <f:metadata>
+                    <f:viewParam name="data" value="#{loginBean.identificador}" />
+                    <f:event type="preRenderView" listener="#{loginBean.botonLogin(event)}"/>
+                </f:metadata>
+    </h:head>
+</html>

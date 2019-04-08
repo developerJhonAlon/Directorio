@@ -1,0 +1,44 @@
+<!DOCTYPE html5 PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <f:view>
+
+        <h:head>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <h:outputStylesheet library="css" name="estilos.css"></h:outputStylesheet>
+            <title>
+                <ui:insert name="titulo">Directorio Telefonico</ui:insert>
+            </title>
+        </h:head>
+
+        <h:body>
+
+            <div id="contenido">
+
+
+                <ui:insert name="contenido">
+
+                    Aqui va el Contenido
+
+
+                </ui:insert>
+
+
+            </div>
+
+            <center>
+                <div id="pie">
+                    <ui:insert name="pie">
+                        <p class="piePagina">Derechos reservados ESPE</p>
+                    </ui:insert>
+                </div>
+            </center>
+
+        </h:body>
+    </f:view>
+</html>

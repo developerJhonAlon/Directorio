@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="./WEB-INF/templates/plantillaPrincipal.xhtml"
+                xmlns:p="http://primefaces.org/ui">
+                    
+    <ui:define name="titulo">Bienvenido</ui:define>
+        
+    <ui:define name="contenido">
+        <p:layout fullPage="true">
+            <p:layoutUnit position="north" styleClass="letras">
+                <center>
+                    <p:panelGrid columns="6" styleClass="companyHeaderGrid">
+                        <p:graphicImage name="/images/espe.jpg"
+                                        alt="Image Description for #{image}" title="#{image}" height="50"
+                                        width="250" />
+                        <p:graphicImage name="/images/directorio.png"
+                                        alt="Image Description for #{image}" title="#{image}" height="80"
+                                        width="80" />
+                        <h:outputText value="" />
+                        <p:graphicImage name="/images/telf_header.gif"
+                                        alt="Image Description for #{telefono}" title="#{telefono}" height="120"
+                                        width="150" />
+                        <p:panel header="Instrucciones para llamadas desde ESPE Matriz" styleClass="titulo" >
+                            <p:panelGrid styleClass="negritaTam" columns="3" >
+                                <h:outputText styleClass="negritaTam"
+                                              value="#{busquedaBean.listaInstrucciones.get(0).getDescripcion()}" />
+                                <h:outputText styleClass="negritaTam"
+                                              value="#{busquedaBean.listaInstrucciones.get(1).getDescripcion()}" />
+                                <h:outputText styleClass="negritaTam"
+                                              value="#{busquedaBean.listaInstrucciones.get(2).getDescripcion()}" />
+                                <h:outputText styleClass="negritaTam"
+                                              value="#{busquedaBean.listaInstrucciones.get(3).getDescripcion()}" />
+                                <h:outputText styleClass="negritaTam"
+                                              value="#{busquedaBean.listaInstrucciones.get(4).getDescripcion()}" />
+                            </p:panelGrid>
+                        </p:panel>
+                    </p:panelGrid>
+                </center>
+            </p:layoutUnit>
+            
+            <!-- Criterios de Busqueda -->
+            <p:layoutUnit position="west" resizable="true" size="350px"
+                          minSize="250" header="Criterios de Búsqueda">
+                <h:form id="formBuscar">
+                    <p:growl id="mgs" life="2000" />
+                    <p:panelGrid styleClass="companyHeaderGrid" columns="1"
+                                 style="width:100%;">
+                        <p:outputLabel for="codigoCriterio" value="Busqueda:" />
+                        <p:selectOneMenu id="codigoCriterio" style="width:90%;"
+                                         value="#{busquedaBean.valorBusqueda}">
+                            <f:selectItem itemLabel="Seleccione..." />
+                            <f:selectItems value="#{busquedaBean.busqueda}" var="crit"
+                                           itemValue="#{crit.valor}" itemLabel="#{crit.descripcion}" />
+                            <p:ajax update="@form" listener="#{busquedaBean.verSedes()}" />
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    
+                    <p:panelGrid id="panelSedes" styleClass="companyHeaderGrid"
+                                 rendered="#{busquedaBean.desplegarSedes}" columns="1"
+                                 style="width:100%;" >
+                        <p:outputLabel for="codigoSede" value="#{busquedaBean.etiqueta}" />
+                        <p:selectOneMenu id="codigoSede" style="width:90%;"
+                                         value="#{busquedaBean.sedeSelecciona}">
+                            <f:selectItem itemLabel="Seleccione..." />
+                            <f:selectItems value="#{busquedaBean.listaSedes}" var="sede"
+                                           itemValue="#{sede.valor}" itemLabel="#{sede.descripcion}" />
+                            <p:ajax update="@form"
+                                    listener="#{busquedaBean.verDepartamento()}" />
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <p:panelGrid id="panelUnidades" styleClass="companyHeaderGrid"
+                                 rendered="#{busquedaBean.desplegarDepart}" columns="1"
+                                 style="width:100%;" >
+                        <p:outputLabel for="codigoDepar" value="Departamento / Unidad:" />
+                        <p:selectOneMenu id="codigoDepar"
+                                            value="#{busquedaBean.unidadSelecciona}" filter="true"
+                                            filterMatchMode="contains" style="width:90%;">
+                            <f:selectItem itemLabel="Seleccione..." />
+                            <f:selectItems value="#{busquedaBean.listaUnida}" var="unidad"
+                                           itemLabel="#{unidad.descripcion}" itemValue="#{unidad.valor}" />
+                            <p:ajax update="@form" listener="#{busquedaBean.verUnidadSede()}" />
+                            <p:column>
+                                <h:outputText value="#{unidad.descripcion}" />
+                            </p:column>
+                        </p:selectOneMenu>
+                        <p:watermark for="codigoDepar" value="Seleccione Unidad" />
+                    </p:panelGrid>
+
+                    <p:panelGrid style="width:100%;" styleClass="companyHeaderGrid"
+                                 columns="4" id="panelEntrada"
+                                 rendered="#{busquedaBean.desplegarEntrada}">
+                        <p:inputText id="valorBus" style="width:90%;"
+                                     value="#{busquedaBean.textoBuscado}" maxlength="15">   
+                        </p:inputText>
+
+                        <p:watermark for="valorBus" value="#{busquedaBean.msgInformativo}" />
+
+                        <p:commandButton id="botonBuscar" value="Buscar"
+                                         update=":formDetalle:vistaPresen,:formBuscar:mgs,:formDetalle:dataTheStaff"
+                                         actionListener="#{busquedaBean.buttonAction()}" process="@parent"
+                                         styleClass="ui-priority-primary" icon="ui-icon-search" />
+                    </p:panelGrid>
+
+                </h:form>
+
+            </p:layoutUnit>
+                
+            <p:layoutUnit position="center">
+                <h:form id="formDetalle">
+                    <p:panel header="Resultados de la Búsqueda">
+                        <p:dataTable id="vistaPresen" var="vis"
+                                     value="#{busquedaBean.vistaBusqueda}" selectionMode="single"
+                                     selection="#{busquedaBean.selectedPersona}"
+                                     rowKey="#{vis.idPersonal}" paginator="true" rows="7"
+                                     paginatorPosition="bottom" paginatorAlwaysVisible="true"
+                                     emptyMessage="No se encontraron Datos">
+                            <p:ajax event="rowSelect" listener="#{busquedaBean.onRowSelect}" update="@form" />
+                            <p:ajax event="rowUnselect"
+                                    listener="#{busquedaBean.onRowUnselect}" update="@form"  />
+                            <p:column headerText="NOMBRE" sortBy="#{vis.personalNomb}" >
+                                <h:outputText value="#{vis.personalNomb}" />
+                            </p:column>
+                            <p:column headerText="EXT" width="40" sortBy="#{vis.extensionNomb}" >
+                                <h:outputText value="#{vis.extensionNomb}" />
+                            </p:column>
+                            <p:column headerText="TELEFONO" width="70" sortBy="#{vis.telefonoNomb}" >
+                                <h:outputText value="#{vis.telefonoNomb}" />
+                            </p:column>
+                            <p:column headerText="UNIDAD" sortBy="#{vis.unidadNomb}" >
+                                <h:outputText value="#{vis.unidadNomb}" />
+                            </p:column>
+                            <p:column headerText="CARGO" sortBy="#{vis.cargoNomb}" >
+                                <h:outputText value="#{vis.cargoNomb}" />
+                            </p:column>
+                        </p:dataTable>
+                    </p:panel>
+                    <p:panel id="dataTheStaff">
+                        <p:panelGrid rendered="#{busquedaBean.desplegarInf}" columns="2">
+                            <f:facet name="header">Información Seleccionada</f:facet>
+                            <h:outputText value="Nombre:" styleClass="negrita" />
+                            <h:outputText
+                                value="#{busquedaBean.selectedPersona.personalNomb}" />
+                            <h:outputText value="Extensión:" styleClass="negrita" />
+                            <h:outputText
+                                value="#{busquedaBean.selectedPersona.extensionNomb}" />
+                                    
+                            <h:outputText value="Teléfono:" styleClass="negrita" />
+                            <h:outputText
+                                value="#{busquedaBean.selectedPersona.telefonoNomb}" />
+                            <h:outputText value="Unidad:" styleClass="negrita" />
+                            <h:outputText value="#{busquedaBean.selectedPersona.unidadNomb}" />
+                                
+                                
+                            <h:outputText value="Sede:" styleClass="negrita" />
+                            <h:outputText value="#{busquedaBean.selectedPersona.sedeNomeb}" />
+                                
+                            <h:outputText value="Correo:" styleClass="negrita" />
+                            <h:outputText value="#{busquedaBean.selectedPersona.correo}" />
+                                
+                        </p:panelGrid>
+                            
+                    </p:panel>
+                        
+                        
+                </h:form>
+            </p:layoutUnit>
+                
+                
+        </p:layout>
+            
+    </ui:define>
+</ui:composition>

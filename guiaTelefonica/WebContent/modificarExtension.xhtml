@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	template="./WEB-INF/templates/plantillaPrincipal.xhtml"
+	xmlns:p="http://primefaces.org/ui">
+    
+	<ui:define name="titulo">Modificar Extensiones</ui:define>
+
+	<ui:define name="contenido">
+
+		<p:layout fullPage="true">
+
+			<p:layoutUnit position="north">
+				<p:spacer height="20px" />
+
+				<center>
+					<h:outputText
+						value="GUIA TELEFONICA - UNIVERSIDAD DE LAS FUERZAS ARMADAS ESPE"
+						style="margin-top: 0" />
+
+				</center>
+				<p:spacer height="20px" />
+
+				<p:panel
+					header="Modificar Extensiones - Administrador:  #{agregarBean.nombreAdministrador}">
+
+					<p:dataList value="#{agregarBean.administrado}" var="car"
+						type="ordered">
+						<f:facet name="header">
+            					Sedes
+        					</f:facet>
+        					#{car.nombSede}
+    						</p:dataList>
+
+				</p:panel>
+			</p:layoutUnit>
+
+			<p:layoutUnit position="west" resizable="true" header="Busquedas">
+
+
+				<p:panelGrid id="panelBusqueda" columns="1"
+					style="width:100%;">
+
+					<p:outputLabel for="valorBus" value="Ingrese el Apellido:" />
+					<p:inputText id="valorBus" value="#{modificarBean.valorEnviado}"
+						required="true" style="width:100%;a" maxlength="15" />
+
+					<p:growl id="growl" life="2000" />
+					<p:commandButton id="botonBuscar" value="Buscar"
+						update="vistaPresen,growl"
+						actionListener="#{modificarBean.botonConsulta()}"
+						process="@this :form:panelBusqueda"
+						styleClass="ui-priority-primary" />
+
+				</p:panelGrid>
+				<p:spacer height="20px" />
+
+				<p:panel header="Información a Editar">
+					<p:panelGrid id="datosModifica" columns="1" style="width:100%;" >
+
+						<p:outputLabel for="valorFono" value="Ingrese el Telefono:" />
+						<p:inputText id="valorFono" value="#{modificarBean.nuevoFono}"
+							required="true" style="width:100%;" maxlength="10"
+							validatorMessage="Teléfono Invalido">
+							<f:validateRegex pattern="[0-9]{2}+-[0-9]{7}" />
+						</p:inputText>
+
+
+						<p:outputLabel for="valorExten" value="Ingrese la Extensión:" />
+						<p:inputText id="valorExten" value="#{modificarBean.nuevaExten}"
+							required="true" style="width:100%;" maxlength="4"
+							validatorMessage="Extensión Invalido">
+							<f:validateRegex pattern="[0-9]{4}" />
+						</p:inputText>
+
+
+
+						<p:commandButton id="botonGuardar" value="Modificar Registro"
+							update="vistaPresen,growl"
+							actionListener="#{modificarBean.botonModificar()}"
+							styleClass="ui-priority-primary"
+							process="@form :form:datosModifica">
+							<p:confirm header="Confirmación" message="¿Modificar Registro?"
+								icon="ui-icon-alert" />
+						</p:commandButton>
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							<p:commandButton value="Si" type="button"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>
+
+					</p:panelGrid>
+
+
+
+				</p:panel>
+
+
+				<p:panel>
+
+					<p:panelGrid id="panelEliminar" columns="1" style="width:100%;">
+						<p:spacer height="20px" />
+						<p:commandButton id="botonEliminar" value="Eliminar Registro"
+							update="vistaPresen,growl"
+							actionListener="#{modificarBean.botonEliminar()}"
+							styleClass="ui-priority-primary"
+							process="@this :form:vistaPresen">
+							<p:confirm header="Confirmación" message="¿Eliminar Registro?"
+								icon="ui-icon-alert" />
+						</p:commandButton>
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							<p:commandButton value="Si" type="button"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>
+					</p:panelGrid>
+				</p:panel>
+
+
+			</p:layoutUnit>
+
+
+			<center>
+				<p:layoutUnit position="center" header="Resultados de la busqueda">
+					<p:panel>
+						<p:dataTable id="vistaPresen" var="vis"
+							value="#{modificarBean.vistaBusqueda}" scrollable="true"
+							scrollHeight="500" selectionMode="single"
+							selection="#{modificarBean.busquedaSelect}"
+							rowKey="#{vis.idPersonal}" >
+
+							<p:column headerText="NOMBRE">
+								<h:outputText value="#{vis.personalNomb}" />
+							</p:column>
+
+
+							<p:column headerText="EXTENSION">
+								<h:outputText value="#{vis.extensionNomb}" />
+							</p:column>
+
+							<p:column headerText="TELEFONO">
+								<h:outputText value="#{vis.telefonoNomb}" />
+							</p:column>
+
+							<p:column headerText="UNIDAD">
+								<h:outputText value="#{vis.unidadNomb}" />
+							</p:column>
+
+							<p:column headerText="CARGO">
+								<h:outputText value="#{vis.cargoNomb}" />
+							</p:column>
+
+							<p:column headerText="SEDE">
+								<h:outputText value="#{vis.sedeNomeb}" />
+							</p:column>
+
+
+
+						</p:dataTable>
+
+
+					</p:panel>
+
+
+
+				</p:layoutUnit>
+			</center>
+
+
+
+		</p:layout>
+
+	</ui:define>
+</ui:composition>
+

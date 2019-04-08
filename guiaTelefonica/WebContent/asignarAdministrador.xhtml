@@ -1,0 +1,457 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	template="./WEB-INF/templates/plantillaPrincipal.xhtml"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="titulo">Asignar Administradores</ui:define>
+
+	<ui:define name="contenido">
+		<p:layout fullPage="true">
+
+			<p:layoutUnit position="north" resizable="false"
+				header="GUIA TELEFONICA - UNIVERSIDAD DE LAS FUERZAS ARMADAS - ESPE  ">
+				<p:outputLabel>Administración de Administradores - Usuario Master: #{administradorBean.master}</p:outputLabel>
+                                <p:spacer width="40" height="10" />
+                                <p:commandButton process="@this" action="#{administradorBean.llamarReporte()}" value="Reporte LOTAIP" ></p:commandButton>
+			</p:layoutUnit>
+
+			<center>
+				<p:layoutUnit position="center">
+
+					<h:form id="panel1">
+
+						<p:growl id="growl" life="2000" />
+						<p:panel id="panelBusqueda1" header="Resultados de la Búsqueda">
+
+							<p:panelGrid id="panelBusqueda" columns="3" >
+
+								<p:outputLabel for="valorBus" value="Ingrese el Apellido:" />
+								<p:inputText id="valorBus"
+									value="#{administradorBean.textoBusqueda}" required="true"
+									style="width:100%;" maxlength="20" />
+
+								<p:commandButton id="botonBusca" value="Buscar"
+									update="vistaPresen,growl"
+									actionListener="#{administradorBean.botonBuscar()}"
+									process="@parent" icon="ui-icon-search"
+									styleClass="ui-priority-primary" />
+
+							</p:panelGrid>
+
+							<p:dataTable id="vistaPresen" var="vis"
+								value="#{administradorBean.personal}" selectionMode="single"
+								selection="#{administradorBean.administrador}"
+								rowKey="#{vis.idDocente}" paginator="true" rows="4"
+								paginatorPosition="top"
+								paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								paginatorAlwaysVisible="true"
+								emptyMessage="No se encontraron Datos">
+
+								<p:ajax event="rowSelect"
+									listener="#{administradorBean.onRowSelect2}" />
+
+								<p:ajax event="rowUnselect"
+									listener="#{administradorBean.onRowUnselect2}" />
+
+
+								<p:column headerText="NOMBRES">
+									<h:outputText value="#{vis.nombres}" />
+								</p:column>
+
+								<p:column headerText="CEDULA">
+									<h:outputText value="#{vis.cedula}" />
+								</p:column>
+
+								<p:column headerText="ID BANNER">
+									<h:outputText value="#{vis.idDocente}" />
+								</p:column>
+
+								<p:column headerText="SEDE">
+									<h:outputText value="#{vis.sede}" />
+								</p:column>
+
+								<p:column headerText="UBICACION">
+									<h:outputText value="#{vis.unidad}" />
+								</p:column>
+
+								<f:facet name="footer">
+									<p:commandButton process="vistaPresen"
+										update=":form5:modalGuardar,:form5:panelDetalle"
+										icon="ui-icon-plusthick" value="Agregar" ajax="true"
+										actionListener="#{administradorBean.botonAgregar()}"
+										oncomplete="PF('dlg2').show()" />
+								</f:facet>
+
+							</p:dataTable>
+
+
+						</p:panel>
+					</h:form>
+
+                                        <!-- Grid Administradores Actuales -->
+					<h:form id="panel2">
+						<p:panel id="panelFiltro1" header="Administradores Actuales">
+							<p:dataTable id="vistaAdmin2" var="vist"
+								value="#{administradorBean.vistaAdmin}" selectionMode="single"
+								rowKey="#{vist.id_persona}"
+								selection="#{administradorBean.selectedPersona}"
+								paginator="true" rows="5" paginatorPosition="top"
+								paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								paginatorAlwaysVisible="true"
+								emptyMessage="No se encontraron Datos">
+								<p:ajax event="rowSelect"
+									listener="#{administradorBean.onRowSelect}" />
+								<p:ajax event="rowUnselect"
+									listener="#{administradorBean.onRowUnselect}" />
+								<p:column headerText="ID BANNER">
+									<h:outputText value="#{vist.id_persona}" />
+								</p:column>
+								<p:column headerText="NOMBRES">
+									<h:outputText value="#{vist.nombre}" />
+								</p:column>
+								<f:facet name="footer">
+									<p:commandButton process="vistaAdmin2" 
+                                                                                         update=":form7:modalGuardar7,:form7:panelDetalle7"
+                                                                                         icon="ui-icon-search" value="Ver" ajax="true"
+                                                                                         actionListener="#{administradorBean.botonVer()}"
+                                                                                         oncomplete="PF('dlg3').show()">
+									</p:commandButton>
+									<p:commandButton process="vistaAdmin2"
+                                                                                         update=":form7:modalGuardar7,:form7:panelDetalle7"
+                                                                                         icon="ui-icon-pencil" value="Editar" ajax="true"
+                                                                                         actionListener="#{administradorBean.botonEditar()}"
+                                                                                         oncomplete="PF('dlg3').show()">
+									</p:commandButton>
+									<p:commandButton id="botonEliminar" value="Eliminar"
+                                                                                         update="vistaAdmin2,:panel1:growl" icon="ui-icon-close"
+                                                                                         actionListener="#{administradorBean.Eliminar()}"
+                                                                                         process="@this" styleClass="ui-priority-primary">
+										<p:confirm message="¿Eliminar Registro?" icon="ui-icon-alert" />
+									</p:commandButton>
+									<p:confirmDialog global="true" showEffect="fade"
+                                                                                         hideEffect="fade">
+										<p:commandButton value="Si" type="button"
+                                                                                                 styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+										<p:commandButton value="No" type="button"
+                                                                                                 styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+									</p:confirmDialog>
+								</f:facet>
+							</p:dataTable>
+						</p:panel>
+					</h:form>
+                                        <!-- Fin Grid Administradores Actuales -->
+                                        <!-- Grid Títulos -->
+                                        <h:form id="panel9">
+                                            <p:panel id="panelTitulos" header="Titulos" >
+                                                    <p:dataTable id="vistaAdmin3" var="vist" 
+                                                                 value="#{administradorBean.vistaTitulo}" selectionMode="single"
+                                                                 rowKey="#{vist.idTitulo}"
+                                                                 selection="#{administradorBean.selectedTitulo}"
+                                                                 paginator="true" rows="3" paginatorPosition="bottom"
+                                                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                                 paginatorAlwaysVisible="true"
+                                                                 emptyMessage="No se encontraron Datos">
+                                                            <p:ajax event="rowSelect"
+                                                                    listener="#{administradorBean.onRowSelect3}" />
+                                                            <p:ajax event="rowUnselect"
+                                                                    listener="#{administradorBean.onRowUnselect3(event)}" />
+                                                            <p:column headerText="ID">
+                                                                <h:outputText value="#{vist.idTitulo}" />
+                                                            </p:column>
+                                                            <p:column headerText="TITULO">
+                                                                <h:outputText value="#{vist.titulo}" />
+                                                            </p:column>
+                                                            <f:facet name="footer">
+                                                                    <p:commandButton process="vistaAdmin3"
+                                                                                     update="vistaAdmin3, :form9:modalGuardar9, :form9:panelDetalle9"
+                                                                                     icon="ui-icon-plusthick" value="Agregar" ajax="true"
+                                                                                     actionListener="#{administradorBean.botonAgregarTitulo()}"
+                                                                                     oncomplete="PF('dlg5').show()" />
+                                                                    <p:commandButton process="vistaAdmin3"
+                                                                                     update=":form8:modalGuardar8, :form8:panelDetalle8"
+                                                                                     icon="ui-icon-pencil" value="Editar" ajax="true"
+                                                                                     actionListener="#{administradorBean.botonEditar2()}"
+                                                                                     oncomplete="PF('dlg4').show()" />
+                                                                    <p:commandButton process="@this" id="botonEliminar" value="Eliminar"
+                                                                                     update="vistaAdmin3, :panel1:growl" icon="ui-icon-close"
+                                                                                     actionListener="#{administradorBean.EliminarTitulo()}"
+                                                                                     styleClass="ui-priority-primary">
+                                                                            <p:confirm message="¿Eliminar Registro?" icon="ui-icon-alert" />
+                                                                    </p:commandButton>
+                                                                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                                                            <p:commandButton value="Si" type="button"
+                                                                                             styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                                                                            <p:commandButton value="No" type="button"
+                                                                                             styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                                                                    </p:confirmDialog>
+                                                            </f:facet>
+                                                    </p:dataTable>
+                                            </p:panel>
+                                    </h:form>
+                                    <!-- Fin Grid Títulos -->
+                                    <!-- Grid Instrucciones -->
+                                    <h:form id="panel11">
+                                            <p:panel id="panelInstrucciones" header="Instrucciones" >
+                                                    <p:dataTable id="vistaAdmin4" var="vist" 
+                                                                 value="#{administradorBean.vistaInstruccion}" selectionMode="single"
+                                                                 rowKey="#{vist.idInstruccion}"
+                                                                 selection="#{administradorBean.selectedInstruccion}"
+                                                                 paginator="true" rows="5" paginatorPosition="bottom"
+                                                                 emptyMessage="No se encontraron Datos">
+                                                            <p:ajax event="rowSelect"
+                                                                    listener="#{administradorBean.onRowSelect4}" />
+                                                            <p:ajax event="rowUnselect"
+                                                                    listener="#{administradorBean.onRowUnselect4(event)}" />
+                                                            <p:column headerText="TEXTO" >
+                                                                <h:outputText value="#{vist.instruccion}" />
+                                                            </p:column>
+                                                            <f:facet name="footer">
+                                                                    <p:commandButton process="vistaAdmin4"
+                                                                                     update=":form10:modalGuardar10, :form10:panelDetalle10"
+                                                                                     icon="ui-icon-pencil" value="Editar" ajax="true"
+                                                                                     actionListener="#{administradorBean.botonEditar3()}"
+                                                                                     oncomplete="PF('dlg6').show()" />
+                                                            </f:facet>
+                                                    </p:dataTable>
+                                            </p:panel>
+                                    </h:form>
+                                    <!-- Fin Grid Instrucciones -->
+                                </p:layoutUnit>
+                        </center>
+		</p:layout>
+
+		<!-- MODAL PARA AGREGAR ADMINISTRADOR -->
+		<h:form id="form5">
+			<p:dialog id="modalGuardar" header="Administrador" widgetVar="dlg2"
+				modal="true" showEffect="fade" hideEffect="fade" resizable="false"
+				closable="false">
+
+
+				<p:panel id="panelDetalle" style="text-align:center;">
+
+					<p:panelGrid id="panelGuarda" columns="2"
+						rendered="#{not empty administradorBean.administradorModal}"
+						columnClasses="label,value" >
+
+						<h:outputText value="ID:" />
+						<h:outputText id="id"
+							value="#{administradorBean.administradorModal.idDocente}" />
+
+						<h:outputText value="Nombre:" />
+						<h:outputText id="nombre"
+							value="#{administradorBean.administradorModal.nombres}" />
+
+
+						<p:outputLabel for="menu" value="Sedes:" />
+						<p:selectManyCheckbox id="menu" value="#{administradorBean.todas}"
+							label="Lista de Sedes" required="true" columns="1"
+							layout="pageDirection">
+							<f:selectItems value="#{administradorBean.listaSedes}" var="item"
+								itemValue="#{item.valor}" itemLabel="#{item.descripcion}" />
+
+						</p:selectManyCheckbox>
+
+					</p:panelGrid>
+
+					<p:spacer height="20px" />
+					<p:commandButton id="botonGuardar" value="Guardar"
+						update=":panel2:vistaAdmin2,:panel1:growl,panelDetalle"
+						actionListener="#{administradorBean.botonAsignar()}"
+						styleClass="ui-priority-primary"
+						process="@this form5:panelDetalle">
+						<p:confirm header="Confirmación" message="¿Guardar Registro?"
+							icon="ui-icon-alert" />
+					</p:commandButton>
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+						<p:commandButton value="Si" type="button"
+							styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						<p:commandButton value="No" type="button"
+							styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>
+
+					<p:commandButton id="botonCerrar" value="Cerrar"
+						update="panelDetalle"
+						actionListener="#{administradorBean.cerrar()}"
+						styleClass="ui-priority-primary" process="@this"
+						oncomplete="PF('dlg2').hide()">
+						<p:resetInput target="panelDetalle" />
+					</p:commandButton>
+
+				</p:panel>
+			</p:dialog>
+		</h:form>
+
+		<!-- MODAL PARA MODIFICAR ADMINISTRADOR -->
+		<h:form id="form7">
+			<p:dialog id="modalGuardar7" header="Administrador - Ver/Editar" widgetVar="dlg3"
+                                  modal="true" showEffect="fade" hideEffect="fade" resizable="false"
+                                  closable="false">
+				<p:panel id="panelDetalle7" style="text-align:center;">
+					<p:panelGrid id="panelGuarda7" columns="2"
+                                                     rendered="#{not empty administradorBean.adminModal}"
+                                                     columnClasses="label,value" >
+						<h:outputText value="ID:" />
+						<h:outputText id="id7"
+                                                              value="#{administradorBean.adminModal.id_persona}" />
+						<h:outputText value="Nombre:" />
+						<h:outputText id="nombre7"
+                                                              value="#{administradorBean.adminModal.nombre}" />
+						<p:outputLabel for="menu7" value="Sedes:" />
+                                                <p:selectManyCheckbox id="menu7" 
+                                                                      value="#{administradorBean.todas}" 
+                                                                      label="Lista de Sedes" 
+                                                                      required="true" 
+                                                                      columns="1" 
+                                                                      layout="pageDirection">
+							<f:selectItems value="#{administradorBean.listaSedes}" 
+                                                                       var="item" 
+                                                                       itemValue="#{item.valor}" 
+                                                                       itemLabel="#{item.descripcion}" />
+						</p:selectManyCheckbox>
+					</p:panelGrid>
+					<p:spacer height="20px" />
+					<p:commandButton id="botonGuardar7" value="Editar" disabled="#{administradorBean.desplegarInf}"
+                                                         update=":panel2:vistaAdmin2,:panel1:growl,panelDetalle7"
+                                                         actionListener="#{administradorBean.Modificar()}"
+                                                         styleClass="ui-priority-primary"
+                                                         process="@this form7:panelDetalle7">
+						<p:confirm header="Confirmación" message="¿Editar Administrador?"
+                                                           icon="ui-icon-alert" />
+					</p:commandButton>
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+						<p:commandButton value="Si" type="button"
+                                                                 styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						<p:commandButton value="No" type="button"
+                                                                 styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>
+					<p:commandButton id="botonCerrar7" value="Cerrar"
+                                                         update="panelDetalle7"
+                                                         actionListener="#{administradorBean.cerrar()}"
+                                                         styleClass="ui-priority-primary" process="@this"
+                                                         oncomplete="PF('dlg3').hide()">
+						<p:resetInput target="panelDetalle7" />
+					</p:commandButton>
+				</p:panel>
+			</p:dialog>
+		</h:form>
+                
+                <!-- modal para modificar títulos -->
+		<h:form id="form8" >
+			<p:dialog id="modalGuardar8" header="Administrador - Editar Título" widgetVar="dlg4" 
+                                  modal="true" showEffect="fade" hideEffect="fade" resizable="false" 
+                                  closable="false" >
+				<p:panel id="panelDetalle8" style="text-align:center;">
+					<p:panelGrid id="panelGuarda8" columns="2"
+                                                     rendered="#{not empty administradorBean.tituloModal}"
+                                                     columnClasses="label, value" >
+                                                <h:outputText value="ID:" />
+                                                <h:outputText id="id8" 
+                                                              value="#{administradorBean.tituloModal.idTitulo}" />
+                                                <p:outputLabel for="valorTitulo" value="Título:" />
+                                                <p:inputText id="valorTitulo" value="#{administradorBean.tituloModal.titulo}" 
+                                                             required="true" style="width:100%;" maxlength="5" 
+                                                             validatorMessage="Título no válido">
+                                                </p:inputText>
+					</p:panelGrid>
+					<p:spacer height="20px" />
+                                        <p:commandButton id="botonGuardar8" value="Guardar" disabled="#{administradorBean.desplegarInfT}"
+                                                         update=":panel9:vistaAdmin3, panelDetalle8"
+                                                         actionListener="#{administradorBean.ModificarTitulo()}"
+                                                         styleClass="ui-priority-primary"
+                                                         process="@this form8:panelDetalle8" >
+					</p:commandButton>
+                                        
+                                        <p:commandButton id="botonCerrar8" value="Cerrar"
+                                                         update="panelDetalle8"
+                                                         actionListener="#{administradorBean.cerrar()}"
+                                                         styleClass="ui-priority-primary" process="@this"
+                                                         oncomplete="PF('dlg4').hide()">
+						<p:resetInput target="panelDetalle8" />
+					</p:commandButton>
+				</p:panel>
+			</p:dialog>
+		</h:form>
+                <!-- fin modal para modificar títulos -->
+                <!-- modal para agregar títulos -->
+                <h:form id="form9">
+			<p:dialog id="modalGuardar9" header="Administrador - Nuevo Título" widgetVar="dlg5"
+                                  modal="true" showEffect="fade" hideEffect="fade" resizable="false"
+                                  closable="true" >
+                                <p:panel id="panelDetalle9" style="text-align:center;">
+					<p:panelGrid id="panelGuarda9" columns="2"
+                                                     rendered="#{not empty administradorBean.tituloModal}"
+                                                     columnClasses="label,value" >
+                                                <p:outputLabel for="valorTitulo" value="Título: " />
+                                                <p:inputText id="valorTitulo"
+                                                             value="#{administradorBean.tituloModal.titulo}"
+                                                             required="true" style="width:100%;" maxlength="5" >
+                                                </p:inputText>
+					</p:panelGrid>
+					<p:spacer height="20px" />
+					<p:commandButton id="botonGuardar" value="Guardar"
+                                                update=":panel9:vistaAdmin3, panelDetalle9"
+						actionListener="#{administradorBean.InsertarTitulo()}"
+						styleClass="ui-priority-primary"
+						process="@this form9:panelDetalle9">
+						<p:confirm header="Confirmación" message="¿Guardar Registro?"
+							icon="ui-icon-alert" />
+					</p:commandButton>
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+						<p:commandButton value="Si" type="button"
+							styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						<p:commandButton value="No" type="button"
+							styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>
+					<p:commandButton id="botonCerrar" value="Cerrar"
+						update="panelDetalle9"
+						actionListener="#{administradorBean.cerrar()}"
+						styleClass="ui-priority-primary" process="@this"
+						oncomplete="PF('dlg5').hide()">
+						<p:resetInput target="panelDetalle9" />
+					</p:commandButton>
+				</p:panel>
+			</p:dialog>
+		</h:form>
+                <!-- fin modal para agregar títulos -->
+                
+                <!-- modal para modificar instrucciones -->
+		<h:form id="form10" >
+			<p:dialog id="modalGuardar10" header="Administrador - Editar Instrucciones" widgetVar="dlg6" 
+                                  modal="true" showEffect="fade" hideEffect="fade" resizable="false" 
+                                  closable="false" >
+				<p:panel id="panelDetalle10" style="text-align:center;">
+					<p:panelGrid id="panelGuarda10" columns="2"
+                                                     rendered="#{not empty administradorBean.instruccionModal}"
+                                                     columnClasses="label, value" >
+                                                <h:outputText value="ID:" />
+                                                <h:outputText id="id10" 
+                                                              value="#{administradorBean.instruccionModal.idInstruccion}" />
+                                                <p:outputLabel for="valorTitulo" value="Título:" />
+                                                <p:inputText id="valorTitulo" value="#{administradorBean.instruccionModal.instruccion}" 
+                                                             required="true" style="width:100%;" maxlength="200" 
+                                                             validatorMessage="Título no válido">
+                                                </p:inputText>
+					</p:panelGrid>
+					<p:spacer height="20px" />
+                                        <p:commandButton id="botonGuardar8" value="Guardar" disabled="#{administradorBean.desplegarInfI}"
+                                                         update=":panel11:vistaAdmin4, panelDetalle10"
+                                                         actionListener="#{administradorBean.ModificarInstruccion()}"
+                                                         styleClass="ui-priority-primary"
+                                                         process="@this form10:panelDetalle10" >
+					</p:commandButton>
+                                        <p:commandButton id="botonCerrar8" value="Cerrar"
+                                                         update="panelDetalle10"
+                                                         actionListener="#{administradorBean.cerrar()}"
+                                                         styleClass="ui-priority-primary" process="@this"
+                                                         oncomplete="PF('dlg6').hide()">
+						<p:resetInput target="panelDetalle10" />
+					</p:commandButton>
+				</p:panel>
+			</p:dialog>
+		</h:form>
+                <!-- fin modal para modificar instrucciones -->
+	</ui:define>
+</ui:composition>

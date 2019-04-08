@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	template="./WEB-INF/templates/plantillaPrincipal.xhtml"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="titulo">Modificar Administrador</ui:define>
+
+	<ui:define name="contenido">
+
+		<p:layout fullPage="true">
+
+			<p:layoutUnit position="north">
+				<p:spacer height="20px" />
+
+				<center>
+						<h:outputText
+						value="GUIA TELEFONICA - UNIVERSIDAD DE LAS FUERZAS ARMADAS ESPE"
+						style="margin-top: 0" />
+
+				</center>
+				<p:spacer height="20px" />
+				<p:panel header="Sede: ESPE Matriz - Modificar Administradores">
+
+					<center>
+						<p:panelGrid columns="1">
+
+							<h:outputText value="Administrador" />
+							<h:outputText value="Ing. Mauricio Baldeon" />
+
+						</p:panelGrid>
+
+					</center>
+
+				</p:panel>
+			</p:layoutUnit>
+
+			<p:layoutUnit position="west" resizable="true"
+				header="Gestión de Administradores" size="350px" minSize="350">
+
+				<p:spacer height="20px" />
+
+				<p:panel id="menu" styleClass="letras">
+					<p:growl id="growl" life="2000" />
+
+
+					<p:panelGrid columns="1" style="width:100%;">
+						<center>
+							<p:commandButton id="botonGuardar" value="Modificar"
+								update="vistaPresen growl"
+								actionListener="#{administradorBean.Modificar()}"
+								styleClass="ui-priority-primary"
+								style="width:120px; background:#FFFF99;color: #006600; font-size: 12pt;" />
+
+							<p:spacer height="20px" />
+
+							<p:commandButton id="botonEliminar" value="Eliminar"
+								update="vistaPresen,growl"
+								actionListener="#{administradorBean.Eliminar()}"
+								styleClass="ui-priority-primary"
+								style="width:120px; background:#FFFF99;color: #006600; font-size: 12pt;" />
+
+							<p:spacer height="20px" />
+
+							<p:selectCheckboxMenu id="ComboSedes" value="#{administradorBean.todas}"
+								label="Lista de Sedes" filter="true" panelStyle="width:300px"
+								rendered="#{administradorBean.desplegarInf}" required="true"
+								style="width:250px; font-size: 12pt;" styleClass="letras">
+								<f:selectItems id="sedes" value="#{administradorBean.todasSedes}"
+									var="item" itemValue="#{item.valor}"
+									itemLabel="#{item.descripcion}" />
+							</p:selectCheckboxMenu>
+						</center>
+					</p:panelGrid>
+
+
+
+				</p:panel>
+
+
+
+
+			</p:layoutUnit>
+
+			<p:growl id="msgs" showDetail="true" />
+			<center>
+				<p:layoutUnit position="center" header="Resultados de la búsqueda">
+
+					<p:panel>
+						<p:dataTable id="vistaPresen" var="vis"
+							value="#{administradorBean.vistaAdmin}" scrollHeight="200"
+							selectionMode="single" rowKey="#{vis.id_persona}"
+							selection="#{administradorBean.selectedPersona}">
+
+							<p:ajax event="rowSelect"
+								listener="#{administradorBean.onRowSelect}" update=":form:menu" />
+
+							<p:ajax event="rowUnselect"
+								listener="#{administradorBean.onRowUnselect}"
+								update=":form:menu" />
+
+							<p:column headerText="NOMBRE">
+								<h:outputText value="#{vis.nombre}" />
+							</p:column>
+						</p:dataTable>
+					</p:panel>
+
+
+				</p:layoutUnit>
+			</center>
+		</p:layout>
+
+	</ui:define>
+</ui:composition>
+

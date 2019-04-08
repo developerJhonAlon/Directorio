@@ -1,0 +1,541 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	template="./WEB-INF/templates/plantillaPrincipal.xhtml"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="titulo">Agregar Extensiones</ui:define>
+
+	<ui:define name="contenido">
+            <p:layout fullPage="true">
+                <p:layoutUnit position="north" resizable="true"
+                    header="GUIA TELEFONICA - UNIVERSIDAD DE LAS FUERZAS ARMADAS - ESPE  ">
+                    <p:outputLabel>Administración de Extensiones - Usuario Administrador: #{agregarBean.nombreAdministrador} - #{agregarBean.idAdministrador}</p:outputLabel>
+                </p:layoutUnit>
+                <center>
+                    <p:layoutUnit position="center">
+                        <h:form id="panel5">
+                            <p:growl id="growl" life="2000" />
+                            <p:panel id="panelBusqueda2" header="Resultados de la Busqueda">
+                                <p:panelGrid id="panelBusqueda" columns="3" >
+                                    <p:outputLabel for="valorBus2" value="Ingrese el nombre y/o apellido:" />
+                                    <p:inputText id="valorBus2" value="#{agregarBean.textoBuscado}"
+                                            required="true" style="width:100%;" maxlength="20" >
+                                            <p:tooltip id="toolTipValorBus2" for="valorBus2" value="NOMBRE(S) APELLIDO(S)" trackMouse="true" />
+                                    </p:inputText>
+                                    <p:commandButton id="botonBuscar" value="Buscar"
+                                            update="vistaPresen,growl"
+                                            actionListener="#{agregarBean.botonBusqueda()}"
+                                            process="@parent" icon="ui-icon-search"
+                                            styleClass="ui-priority-primary" />
+                                </p:panelGrid>
+                                <p:dataTable id="vistaPresen" var="vis"
+                                        value="#{agregarBean.personal}" selectionMode="single"
+                                        selection="#{agregarBean.selectPersonal}"
+                                        rowKey="#{vis.idDocente}" paginator="true" rows="7"
+                                        paginatorPosition="bottom"
+                                        paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                        paginatorAlwaysVisible="true"
+                                        emptyMessage="No se encontraron Datos">
+                                        <p:ajax event="rowSelect" listener="#{agregarBean.onRowSelect}" />
+                                        <p:ajax event="rowUnselect"
+                                                listener="#{agregarBean.onRowUnselect}" />
+                                        <p:column headerText="NOMBRES">
+                                                <h:outputText value="#{vis.nombres}" />
+                                        </p:column>
+                                        <p:column headerText="CEDULA">
+                                                <h:outputText value="#{vis.cedula}" />
+                                        </p:column>
+                                        <p:column headerText="ID BANNER">
+                                                <h:outputText value="#{vis.idDocente}" />
+                                        </p:column>
+                                        <p:column headerText="UBICACIÓN">
+                                                <h:outputText value="#{vis.unidad}" />
+                                        </p:column>
+                                        <p:column headerText="SEDE">
+                                                <h:outputText value="#{vis.sede}" />
+                                        </p:column>
+                                        <f:facet name="footer">
+                                                <p:commandButton process="vistaPresen"
+                                                        update=":form77:modalGuardar,:form77:panelDetalle"
+                                                        icon="ui-icon-plusthick" value="Agregar"
+                                                        oncomplete="PF('dlg2').show()" />
+                                        </f:facet>
+                                </p:dataTable>
+                                </p:panel>
+                        </h:form>
+                        <h:form id="panel9">
+                            <p:panel id="panelFiltro2" header="Usuarios Internos con Extensiones" >
+                                <p:panelGrid id="panelFiltro" columns="7" >
+                                    <p:outputLabel for="codigoSede" value="Lista de Sedes:" />
+                                    <p:selectOneMenu id="codigoSede" style="width: 250px" value="#{agregarBean.sedeSeleccionada}" >
+                                            <f:selectItem itemLabel="Seleccione..." />
+                                            <f:selectItems value="#{agregarBean.administrado}" var="crit" itemValue="#{crit.codigoSede}" itemLabel="#{crit.nombSede}" />
+                                            <p:ajax update="codigoUnidad" listener="#{agregarBean.actualizarUnidades()}" />
+                                    </p:selectOneMenu>
+                                    <p:outputLabel for="codigoUnidad" value="Lista de Unidades:" />
+                                    <p:selectOneMenu id="codigoUnidad" style="width: 350px"
+                                            value="#{agregarBean.unidadSeleccionada}">
+                                            <f:selectItem itemLabel="Seleccione..." />
+                                            <f:selectItems value="#{agregarBean.listaUnidades}" var="crit"
+                                                    itemValue="#{crit.valor}" itemLabel="#{crit.descripcion}" />
+                                            <p:ajax update="tablaUnidadExtension"
+                                                    listener="#{agregarBean.actualizarExtensiones()}" />
+                                    </p:selectOneMenu>
+                                    <p:outputLabel for="buscarLocal" value="Busqueda:" />
+                                    <p:inputText id="buscarLocal"
+                                            value="#{agregarBean.valorBusquedaLocal}" required="true"
+                                            style="width:200px;" maxlength="15" />
+                                    <p:commandButton id="botonBuscaLocal" title="Buscar"
+                                            update="tablaUnidadExtension,:panel5:growl"
+                                            actionListener="#{agregarBean.busquedaLocal()}"
+                                            process="@parent" styleClass="ui-priority-primary"
+                                            icon="ui-icon-search" />
+                                </p:panelGrid>
+                                <p:dataTable id="tablaUnidadExtension" var="vis" 
+                                    value="#{agregarBean.listaUnidadExtension}"
+                                    selectionMode="single"
+                                    selection="#{agregarBean.unidadExtensionSelect}"
+                                    rowKey="#{vis.identidad}" paginator="true" rows="7"
+                                    paginatorPosition="bottom"
+                                    paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                    paginatorAlwaysVisible="true"
+                                    emptyMessage="No se encontraron Datos" >
+                                    <p:ajax event="rowSelect" listener="#{agregarBean.onRowSelect2}" />
+                                    <p:ajax event="rowUnselect" listener="#{agregarBean.onRowUnselect2}" />
+                                    <p:column headerText="NOMBRES">
+                                        <h:outputText value="#{vis.personalNomb}" />
+                                    </p:column>
+                                    <p:column headerText="EXT" width="40">
+                                        <h:outputText value="#{vis.extensionNomb}" />
+                                    </p:column>
+                                    <p:column headerText="TELEFONO" width="70">
+                                            <h:outputText value="#{vis.telefonoNomb}" />
+                                    </p:column>
+                                    <p:column headerText="ID" width="50">
+                                            <h:outputText value="#{vis.idPersonal}" />
+                                    </p:column>
+                                    <p:column headerText="UBICACIÓN">
+                                            <h:outputText value="#{vis.unidadNomb}" />
+                                    </p:column>
+                                    <p:column headerText="SEDE">
+                                            <h:outputText value="#{vis.sedeNomeb}" />
+                                    </p:column>
+                                    <p:column headerText="CARGO">
+                                        <h:outputText value="#{vis.cargoNomb}" />
+                                    </p:column>
+                                    <f:facet name="footer">
+                                        <p:growl id="growl2" life="2000" />
+                                        <p:commandButton process="tablaUnidadExtension"
+                                            update=":form88:modalEditar,:form88:panelEditar"
+                                            icon="ui-icon-pencil" value="Editar"
+                                            oncomplete="PF('dlg3').show()">
+                                        </p:commandButton>
+                                        
+                                    </f:facet>
+                                </p:dataTable>
+                            </p:panel>
+                        </h:form>
+
+
+
+
+					<!-- 		GESTION DE USUARIOS EXTERNOS			-->
+
+					<h:form id="panel10">
+						<p:panel id="panelFiltroEx"
+							header="Usuarios Externos con Extensiones">
+
+							<p:panelGrid id="panelFiltroE" columns="7" >
+
+								<p:outputLabel for="codigoSedeE" value="Lista de Sedes:" />
+								<p:selectOneMenu id="codigoSedeE" style="width: 250px"
+									value="#{proveedorBean.sedeSeleccionada}">
+									<f:selectItem itemLabel="Seleccione..." />
+									<f:selectItems value="#{proveedorBean.listaSedeExterna}"
+										var="crit" itemValue="#{crit.valor}"
+										itemLabel="#{crit.descripcion}" />
+									<p:ajax update="codigoUnidadE"
+										listener="#{proveedorBean.actualizarUnidades()}" />
+
+								</p:selectOneMenu>
+
+
+								<p:outputLabel for="codigoUnidadE" value="Lista de Unidades:" />
+								<p:selectOneMenu id="codigoUnidadE" style="width: 350px"
+									value="#{proveedorBean.unidadSeleccionada}">
+									<f:selectItem itemLabel="Seleccione..." />
+									<f:selectItems value="#{proveedorBean.listaUnidadExterna}"
+										var="crit" itemValue="#{crit.valor}"
+										itemLabel="#{crit.descripcion}" />
+									<p:ajax update="tablaUnidadExtensionE"
+										listener="#{proveedorBean.actualizarExtensiones()}" />
+
+								</p:selectOneMenu>
+
+								<p:outputLabel for="buscarLocalE" value="Busqueda:" />
+								<p:inputText id="buscarLocalE"
+									value="#{proveedorBean.valorBusquedaExterno}" required="true"
+									style="width:200px;" maxlength="15" />
+
+
+								<p:commandButton id="botonBuscaLocalE" title="Buscar"
+									update="tablaUnidadExtensionE,:panel5:growl"
+									actionListener="#{proveedorBean.busquedaProveedorExterno()}"
+									process="@parent" styleClass="ui-priority-primary"
+									icon="ui-icon-search" />
+
+							</p:panelGrid>
+
+
+							<p:dataTable id="tablaUnidadExtensionE" var="vis" 
+								value="#{proveedorBean.listaExtensiones}" selectionMode="single"
+								selection="#{proveedorBean.proveedorSeleccionado}"
+								rowKey="#{vis.identidad}" paginator="true" rows="7"
+								paginatorPosition="bottom"
+								paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								paginatorAlwaysVisible="true"
+								emptyMessage="No se encontraron Datos">
+
+
+								<p:ajax event="rowSelect"
+									listener="#{proveedorBean.onRowSelect}" />
+
+								<p:ajax event="rowUnselect"
+									listener="#{proveedorBean.onRowUnselect}" />
+
+								<p:column headerText="CAMPUS">
+									<h:outputText value="#{vis.sedeNomb}" />
+								</p:column>
+
+								<p:column headerText="NOMBRES">
+									<h:outputText value="#{vis.nombreProvee}" />
+								</p:column>
+
+								<p:column headerText="TELEFONO">
+									<h:outputText value="#{vis.telefonoNomb}" />
+								</p:column>
+
+A
+							<p:column headerText="EXT">
+									<h:outputText value="#{vis.extensionNomb}" />
+								</p:column>
+
+
+
+								<p:column headerText="UNIDAD">
+									<h:outputText value="#{vis.unidadNomb}" />
+								</p:column>
+
+
+								<p:column headerText="AREA">
+									<h:outputText value="#{vis.areaNomb}" />
+								</p:column>
+
+								<f:facet name="footer">
+									<p:growl id="growl3" life="2000" />
+
+									<p:commandButton process="tablaUnidadExtensionE"
+										update=":form67:modalEditarExterno,:form67:panelEditarExterno"
+										icon="ui-icon-plusthick" value="Agregar" ajax="true"
+										actionListener="#{proveedorBean.botonAgregar()}"
+										oncomplete="PF('dlg4').show()" />
+
+									<p:commandButton process="tablaUnidadExtensionE"
+										update=":form67:modalEditarExterno,:form67:panelEditarExterno"
+										icon="ui-icon-pencil" value="Editar" ajax="true"
+										actionListener="#{proveedorBean.botonEditar()}"
+										oncomplete="PF('dlg4').show()">
+									</p:commandButton>
+
+									<p:commandButton id="botonEliminarExterno" value="Eliminar"
+										update="tablaUnidadExtensionE,:panel10:codigoSedeE,:panel10:codigoUnidadE,growl3"
+										icon="ui-icon-close"
+										actionListener="#{proveedorBean.botonEliminar()}"
+										process="@this " styleClass="ui-priority-primary">
+										<p:confirm message="¿Eliminar Registro?" icon="ui-icon-alert" />
+
+									</p:commandButton>
+
+									<p:confirmDialog global="true" showEffect="fade"
+										hideEffect="fade">
+										<p:commandButton value="Si" type="button"
+											styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+
+										<p:commandButton value="No" type="button"
+											styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+
+									</p:confirmDialog>
+
+								</f:facet>
+
+							</p:dataTable>
+
+
+						</p:panel>
+
+
+					</h:form>
+
+
+
+				</p:layoutUnit>
+			</center>
+
+		</p:layout>
+
+		<!-- MODAL PARA AGREGAR EXTENSIONES A USUARIOS INTERNOS -->
+		<h:form id="form77">
+			<p:dialog id="modalGuardar" header="Extensión Interna"
+				widgetVar="dlg2" modal="true" showEffect="fade" hideEffect="fade"
+				resizable="false" closable="false">
+				<p:panel id="panelDetalle" style="text-align:center;">
+					<p:panelGrid id="panelGuarda" columns="2"
+						rendered="#{not empty agregarBean.personalSelectModal}"
+						columnClasses="label,value" >
+						<h:outputText value="ID:" />
+						<h:outputText id="id"
+							value="#{agregarBean.personalSelectModal.idDocente}" />
+						<h:outputText value="Nombre:" />
+						<h:outputText id="nombre"
+							value="#{agregarBean.personalSelectModal.nombres}" />
+                                                <h:outputText value="Sede:" />
+                                                <h:outputText id="codigoSede2" 
+                                                              value="#{agregarBean.personalSelectModal.sede}" />
+                                                <h:outputText value="Unidad:" />
+                                                <h:outputText id="codigoUnidad2" 
+                                                              value="#{agregarBean.personalSelectModal.unidad}" />
+						<p:outputLabel for="valorFono" value="Teléfono:" />
+						<p:inputText id="valorFono" value="#{agregarBean.telefono}"
+							required="true" style="width:100%;" maxlength="10"
+							validatorMessage="Teléfono Invalido">
+							<f:validateRegex pattern="[0-9]{2}+-[0-9]{7}" />
+                                                        <p:tooltip id="toolTipValorFono" for="valorFono" value="02-1234567" trackMouse="true" />
+						</p:inputText>
+						<p:outputLabel for="valorExten" value="Extensión:" />
+						<p:inputText id="valorExten" value="#{agregarBean.extension}"
+							required="true" style="width:100%;" maxlength="4"
+							validatorMessage="Extensión Invalido">
+							<f:validateRegex pattern="[0-9]{4}" />
+                                                        <p:tooltip id="toolTipvalorExten" for="valorExten" value="1234" trackMouse="true" />
+						</p:inputText>
+					</p:panelGrid>
+					<p:spacer height="20px" />
+					<p:commandButton id="botonGuardar" value="Guardar"
+						update=":panel9:tablaUnidadExtension,:panel5:growl,:panel9:codigoUnidad,panelDetalle"
+						actionListener="#{agregarBean.botonGuardar()}"
+						styleClass="ui-priority-primary"
+						process="@this form77:panelDetalle">
+						<p:confirm header="Confirmación" message="¿Guardar Registro?"
+							icon="ui-icon-alert" />
+					</p:commandButton>
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+						<p:commandButton value="Si" type="button"
+							styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						<p:commandButton value="No" type="button"
+							styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>
+					<p:commandButton id="botonCerrar" value="Cerrar"
+						update="panelDetalle" actionListener="#{agregarBean.cerrar()}"
+						styleClass="ui-priority-primary" process="@this "
+						oncomplete="PF('dlg2').hide()">
+						<p:resetInput target="panelDetalle" />
+					</p:commandButton>
+				</p:panel>
+			</p:dialog>
+		</h:form>
+
+                <!-- 		MODAL PARA USUARIOS INTERNOS			-->
+                
+		<h:form id="form88">
+			<p:dialog id="modalEditar" header="Extensión Interno"
+				widgetVar="dlg3" modal="true" showEffect="fade" hideEffect="fade"
+				resizable="false" closable="false">
+
+				<p:panel id="panelEditar" style="text-align:center;">
+
+					<p:panelGrid id="panelEditar2" columns="2"
+						rendered="#{not empty agregarBean.extensionSelectModal}"
+						columnClasses="label,value" >
+
+						<h:outputText value="ID:" />
+						<h:outputText id="id2"
+							value="#{agregarBean.extensionSelectModal.idPersonal}" />
+
+						<h:outputText value="Nombre:" />
+						<h:outputText id="nombre2"
+							value="#{agregarBean.extensionSelectModal.personalNomb}" />
+
+						<h:outputText value="Sede:" />
+                                                <h:outputText id="codigoSede3" 
+                                                        value="#{agregarBean.extensionSelectModal.sedeNomeb}"  />
+
+						<h:outputText value="Unidad:" />
+                                                <h:outputText id="codigoUnidad3" 
+                                                              value="#{agregarBean.extensionSelectModal.unidadNomb}" />
+
+						<p:outputLabel for="valorFono2" value="Teléfono:" />
+						<p:inputText id="valorFono2"
+							value="#{agregarBean.extensionSelectModal.telefonoNomb}"
+							required="true" style="width:100%;" maxlength="10"
+							validatorMessage="Teléfono Invalido">
+							<f:validateRegex pattern="[0-9]{2}+-[0-9]{7}" />
+                                                        <p:tooltip id="toolTipValorFono2" for="valorFono2" value="02-1234567" trackMouse="true" />
+                                                </p:inputText>
+                                                
+						<p:outputLabel for="valorExten2" value="Extensión:" />
+						<p:inputText id="valorExten2"
+							value="#{agregarBean.extensionSelectModal.extensionNomb}"
+							required="true" style="width:100%;" maxlength="4"
+							validatorMessage="Extensión Invalido">
+							<f:validateRegex pattern="[0-9]{4}" />
+                                                        <p:tooltip id="toolTipvalorExten2" for="valorExten2" value="1234" trackMouse="true" />
+						</p:inputText>
+
+					</p:panelGrid>
+
+					<p:spacer height="20px" />
+					<p:commandButton id="botonGuardar2" value="Editar"
+						update=":panel9:tablaUnidadExtension,:panel5:growl,panelEditar"
+						actionListener="#{agregarBean.botonEditar()}"
+						styleClass="ui-priority-primary"
+						process="@this form88:panelEditar">
+						<p:confirm header="Confirmación" message="¿Editar Registro?"
+							icon="ui-icon-alert" />
+					</p:commandButton>
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+						<p:commandButton value="Si" type="button"
+							styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						<p:commandButton value="No" type="button"
+							styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>
+
+					<p:commandButton id="botonCerrar2" value="Cerrar"
+						update="panelEditar" actionListener="#{agregarBean.cerrar2()}"
+						styleClass="ui-priority-primary" process="@this"
+						oncomplete="PF('dlg3').hide()">
+						<p:resetInput target="panelEditar" />
+					</p:commandButton>
+
+				</p:panel>
+			</p:dialog>
+
+
+
+		</h:form>
+
+		<!-- 		MODAL PARA USUARIOS EXTERNOS			-->
+
+		<h:form id="form67">
+			<p:dialog id="modalEditarExterno" header="Extensión Externa"
+				widgetVar="dlg4" modal="true" showEffect="fade" hideEffect="fade"
+				resizable="false" closable="false">
+
+				<p:panel id="panelEditarExterno" style="text-align:center;">
+
+					<p:panelGrid id="panelEditarE" columns="2"
+						rendered="#{not empty proveedorBean.proveedorSeleccionadoModal}"
+						columnClasses="label,value" >
+
+
+						<p:outputLabel for="valorCampus" value="Campus:" />
+						<p:inputText id="valorCampus"
+							value="#{proveedorBean.proveedorSeleccionadoModal.sedeNomb}"
+							required="true" style="width:100%;" maxlength="30">
+
+						</p:inputText>
+
+
+						<p:outputLabel for="valorTelefonoExterno" value="Teléfono:" />
+						<p:inputText id="valorTelefonoExterno"
+							value="#{proveedorBean.proveedorSeleccionadoModal.telefonoNomb}"
+							required="true" style="width:100%;" maxlength="10"
+							validatorMessage="Teléfono Invalido">
+							<f:validateRegex pattern="[0-9]{2}+-[0-9]{7}" />
+						</p:inputText>
+
+
+						<p:outputLabel for="valorExtensionExterno" value="Extensión:" />
+						<p:inputText id="valorExtensionExterno"
+							value="#{proveedorBean.proveedorSeleccionadoModal.extensionNomb}"
+							required="true" style="width:100%;" maxlength="4"
+							validatorMessage="Extensión Invalido">
+
+
+							<f:validateRegex pattern="[0-9]{3,4}" />
+
+						</p:inputText>
+
+						<p:outputLabel for="valorUnidadExterno" value="Unidad:" />
+						<p:inputText id="valorUnidadExterno"
+							value="#{proveedorBean.proveedorSeleccionadoModal.unidadNomb}"
+							required="true" style="width:100%;" maxlength="30">
+						</p:inputText>
+
+
+
+						<p:outputLabel for="valorAbreviatura" value="Abreviatura:" />
+						<p:inputText id="valorAbreviatura"
+							value="#{proveedorBean.proveedorSeleccionadoModal.abreviat}"
+							required="true" style="width:100%;" maxlength="20">
+						</p:inputText>
+
+
+						<p:outputLabel for="valorAreaExterno" value="Area:" />
+						<p:inputText id="valorAreaExterno"
+							value="#{proveedorBean.proveedorSeleccionadoModal.areaNomb}"
+							required="true" style="width:100%;" maxlength="30">
+						</p:inputText>
+
+
+						<h:outputLabel for="valorTrato" value="Trato:" />
+                                                <h:selectOneMenu id="valorTrato" style="width: 250px" >
+                                                    <f:selectItem itemLabel="Seleccione..." />
+                                                    <f:selectItems value="#{agregarBean.tratos}" var="crit" itemValue="#{crit.valor}" itemLabel="#{crit.descripcion}" />
+                                                </h:selectOneMenu>
+
+
+						<p:outputLabel for="valorNombreExterno" value="Nombre y Apellido:" />
+						<p:inputText id="valorNombreExterno"
+							value="#{proveedorBean.proveedorSeleccionadoModal.nombreProvee}"
+							required="true" style="width:100%;" maxlength="30">
+						</p:inputText>
+
+					</p:panelGrid>
+
+					<p:spacer height="20px" />
+					<p:commandButton id="botonGuardarExterno" value="Aceptar"
+						update=":panel10:tablaUnidadExtensionE,:panel5:growl,panelEditarExterno,:panel10:codigoSedeE,:panel10:codigoUnidadE"
+						actionListener="#{proveedorBean.botonAceptar()}"
+						styleClass="ui-priority-primary"
+						process="@this form67:panelEditarExterno">
+						<p:confirm header="Confirmación" message="¿Enviar Cambios?"
+							icon="ui-icon-alert" />
+					</p:commandButton>
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+						<p:commandButton value="Si" type="button"
+							styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						<p:commandButton value="No" type="button"
+							styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>
+
+					<p:commandButton id="botonCerrarExterno" value="Cerrar"
+						update="panelEditarExterno"
+						actionListener="#{proveedorBean.cerrar()}"
+						styleClass="ui-priority-primary" process="@this"
+						oncomplete="PF('dlg4').hide()">
+						<p:resetInput target="panelEditarExterno" />
+					</p:commandButton>
+
+				</p:panel>
+			</p:dialog>
+
+		</h:form>
+
+
+
+	</ui:define>
+</ui:composition>
+
